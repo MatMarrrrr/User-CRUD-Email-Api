@@ -2,12 +2,12 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Symfony\Component\HttpFoundation\Response;
 
-class UpdateUserRequest extends FormRequest
+class StoreEmailAddressRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,14 +24,8 @@ class UpdateUserRequest extends FormRequest
      */
     public function rules(): array
     {
-        $userId = $this->route('user');
-
         return [
-            'first_name' => 'sometimes|string|max:255',
-            'last_name'  => 'sometimes|string|max:255',
-            'phone'      => 'sometimes|string|max:20',
-            'login'      => 'sometimes|string|unique:users,login,' . $userId,
-            'password'   => 'sometimes|string|min:8',
+            'email' => 'required|email|unique:email_addresses,email',
         ];
     }
 
