@@ -11,6 +11,8 @@ use App\Contracts\Repositories\EmailAddressRepositoryInterface;
 use App\Repositories\EmailAddressRepository;
 use App\Contracts\Services\EmailAddressServiceInterface;
 use App\Services\EmailAddressService;
+use App\Contracts\Services\AuthServiceInterface;
+use App\Services\AuthService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -26,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
         // Services
         $this->app->bind(UserServiceInterface::class, UserService::class);
         $this->app->bind(EmailAddressServiceInterface::class, EmailAddressService::class);
+        $this->app->bind(AuthServiceInterface::class, AuthService::class);
     }
 
     /**
