@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,27 +17,30 @@ class UserController extends Controller
      */
     public function index(): JsonResponse
     {
-        return response()->json(User::with('emails')->get());
+        $users = User::with('emails')->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data'   => $users,
+        ], Response::HTTP_OK);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreUserRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name'  => 'required|string|max:255',
-            'phone'      => 'required|string|max:20',
-            'login'      => 'required|string|unique:users',
-            'password'   => 'required|string|min:8',
-        ]);
+        $validated = $request->validated();
 
         $validated['password'] = Hash::make($validated['password']);
 
         $user = User::create($validated);
 
-        return response()->json($user, Response::HTTP_CREATED);
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'User created successfully',
+            'data'    => $user,
+        ], Response::HTTP_CREATED);
     }
 
     /**
@@ -47,30 +51,33 @@ class UserController extends Controller
         $user = User::with('emails')->find($id);
 
         if (! $user) {
-            return response()->json(['message' => 'User not found'], Response::HTTP_NOT_FOUND);
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'User not found',
+            ], Response::HTTP_NOT_FOUND);
         }
 
-        return response()->json($user);
+        return response()->json([
+            'status' => 'success',
+            'data'   => $user,
+        ], Response::HTTP_OK);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id): JsonResponse
+    public function update(UpdateUserRequest $request, string $id): JsonResponse
     {
         $user = User::find($id);
 
         if (! $user) {
-            return response()->json(['message' => 'User not found'], Response::HTTP_NOT_FOUND);
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'User not found',
+            ], Response::HTTP_NOT_FOUND);
         }
 
-        $validated = $request->validate([
-            'first_name' => 'sometimes|string|max:255',
-            'last_name'  => 'sometimes|string|max:255',
-            'phone'      => 'sometimes|string|max:20',
-            'login'      => 'sometimes|string|unique:users,login,' . $id,
-            'password'   => 'sometimes|string|min:8',
-        ]);
+        $validated = $request->validated();
 
         if (isset($validated['password'])) {
             $validated['password'] = Hash::make($validated['password']);
@@ -78,7 +85,11 @@ class UserController extends Controller
 
         $user->update($validated);
 
-        return response()->json($user);
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'User updated successfully',
+            'data'    => $user,
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -89,7 +100,10 @@ class UserController extends Controller
         $user = User::find($id);
 
         if (! $user) {
-            return response()->json(['message' => 'User not found'], Response::HTTP_NOT_FOUND);
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'User not found',
+            ], Response::HTTP_NOT_FOUND);
         }
 
         $user->delete();
