@@ -55,8 +55,11 @@ class AuthService implements AuthServiceInterface
         ], Response::HTTP_OK);
     }
 
-    public function logout(User $user): JsonResponse
+    public function logout(): JsonResponse
     {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
         $user->tokens()->delete();
 
         return response()->json([

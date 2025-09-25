@@ -9,5 +9,5 @@ interface AuthServiceInterface
 {
     public function register(array $data): JsonResponse;
     public function login(array $credentials): JsonResponse;
-    public function logout(User $user): JsonResponse;
+    public function logout(): JsonResponse;
 }

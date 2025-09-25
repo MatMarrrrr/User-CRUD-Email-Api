@@ -31,16 +31,6 @@ class AuthController extends Controller
 
     public function logout(): JsonResponse
     {
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
-
-        if (!$user) {
-            return response()->json([
-                'status'  => 'error',
-                'message' => 'Not authenticated',
-            ], Response::HTTP_UNAUTHORIZED);
-        }
-
-        return $this->service->logout($user);
+        return $this->service->logout();
     }
 }
